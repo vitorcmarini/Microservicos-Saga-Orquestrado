@@ -1,6 +1,5 @@
 import os
 import threading
-import subprocess
 
 threads = []
 
@@ -35,16 +34,15 @@ def build_all_applications():
 
 def remove_remaining_containers():
     print("Removing all containers.")
-    subprocess.run(["docker-compose", "down"], check=True)
-    result = subprocess.run(["docker", "ps", "-aq"], capture_output=True, text=True, check=True)
-    containers = result.stdout.split('\n')
+    os.system("docker-compose down")
+    containers = os.popen('docker ps -aq').read().split('\n')
     containers.remove('')
     if len(containers) > 0:
-        print(f"There are still {len(containers)} containers created")
+        print("There are still {} containers created".format(containers))
         for container in containers:
-            print(f"Stopping container {container}")
-            subprocess.run(["docker", "container", "stop", container], check=True)
-        subprocess.run(["docker", "container", "prune", "-f"], check=True)
+            print("Stopping container {}".format(container))
+            os.system("docker container stop {}".format(container))
+        os.system("docker container prune -f")
 
 
 if __name__ == "__main__":
